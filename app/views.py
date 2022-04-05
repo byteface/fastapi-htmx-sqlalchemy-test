@@ -125,7 +125,7 @@ def delete_book(id, the_sesh: Session = Depends(get_db)):
 @app.post('/submit')
 def submit(title: str = Form(...), author: str = Form(...), the_sesh: Session = Depends(get_db)):
     author_exists = the_sesh.query(Author).filter(Author.name == author).first()
-    # print("THE AUTHOR:", author_exists)
+    # print("THE AUTHOR::", author_exists)
     if author_exists:
         author_id = author_exists.id
         book = Book(author_id=author_id, title=title)
