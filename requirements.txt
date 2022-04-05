@@ -1,0 +1,5 @@
+uvicorn==0.17.6
+fastapi==0.75.1
+python-multipart==0.0.5
+SQLAlchemy==1.4.31
+domonic==0.9.9
