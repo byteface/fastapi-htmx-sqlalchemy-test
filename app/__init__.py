@@ -15,10 +15,15 @@ from sqlalchemy import Boolean, Column, Float, String, Integer
 
 
 SQLALCHEMY_DATABASE_URL = f'sqlite:///sqlite.db'
-engine = create_engine(SQLALCHEMY_DATABASE_URL, echo=True, future=True)
+# engine = create_engine(SQLALCHEMY_DATABASE_URL, echo=True, future=True)
+engine = create_engine(SQLALCHEMY_DATABASE_URL, future=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
+
+# from PIL import Image
+# import pytesseract
+# print(pytesseract.image_to_string(Image.open('test.png')))
 
 def get_db():
     db = SessionLocal()

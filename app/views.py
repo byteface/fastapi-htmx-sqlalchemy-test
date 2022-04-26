@@ -4,6 +4,7 @@ from fastapi.responses import HTMLResponse
 from domonic.html import *
 from domonic import domonic
 from domonic.dom import Node
+from domonic.dom import DOMConfig
 
 from app import app, get_db
 from app.models import Author, Book
@@ -11,13 +12,14 @@ from app.models import Author, Book
 from sqlalchemy.orm import Session
 
 
-# Node.GLOBAL_AUTOESCAPE = True  # bug.ffs
+# DOMConfig.GLOBAL_AUTOESCAPE = True # TODO - note a bug on TextNodes when using parsed html...
+DOMConfig.HTMX_ENABLED = True
 
 # template for book row
 book_row_tmpl = lambda author, title, id: tr(
                     td(title), td(author),
-                    td(button("Edit Title", _class="btn btn-primary", **{"_hx-get": f"/get-edit-form/{id}"},)),
-                    td(button("Delete", _class="btn btn-primary", **{"_hx-delete": f"/delete/{id}"},))
+                    td(button("Edit Title", _class="btn btn-primary", _get=f"/get-edit-form/{id}",)),
+                    td(button("Delete", _class="btn btn-warning", _delete=f"/delete/{id}",)),
                 )
 
 
@@ -53,7 +55,7 @@ def home(the_sesh: Session = Depends(get_db)):
         </table>
     </body>
     </html>
-    ''')[1]  # TODO - bug in parser if it sees an existing doc type it nests all? 
+    ''')
 
     target = mydom.querySelector('#new-book')
     # print(str(mydom))
@@ -61,8 +63,8 @@ def home(the_sesh: Session = Depends(get_db)):
     for book in books:
         author = the_sesh.query(Author).where(Author.id == book.author_id).first()
         target += book_row_tmpl(author.name, book.title, book.id)
-    
-    # return HTMLResponse(f"{mydom.__pyml__()}") # bug pyml not putting strings in quotes
+
+    # print(mydom.__pyml__())
     return HTMLResponse(f"{mydom}")
     # return HTMLResponse(str(mydom))
 
@@ -100,7 +102,6 @@ def get_edit_form(id, the_sesh: Session = Depends(get_db)):
     # response.className = 'editing'
     # response.setAttribute( 'hx-trigger', 'cancel')
     # response.setAttribute( 'hx-get', f"/get-book-row/{id}")
-    
     return HTMLResponse(str(response))
 
 
